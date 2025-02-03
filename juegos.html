@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Juegos Educativos - Sostenibilidad</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="icon" type="image/png" href="reals-removebg-preview.png">
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #e8f5e9; /* Color suave de fondo para armonizar con los verdes */
+            color: #333;
+            background-size: cover;
+            background-position: center;
+        }
+
+        header {
+            background-color: #4CAF50; /* Verde más intenso para el encabezado */
+            color: white;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            border-bottom: 3px solid #4CAF50;
+            background-size: cover;
+            background-position: center;
+        }
+
+        header h1 {
+            margin: 0;
+            font-size: 2.8rem;
+            font-weight: 700;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.5); /* Sombra para mejor legibilidad */
+        }
+
+        nav {
+            display: flex;
+            justify-content: center;
+            background-color: #333;
+            padding: 0.8rem 0;
+        }
+
+        nav a {
+            color: white;
+            text-decoration: none;
+            margin: 0 1.5rem;
+            font-weight: bold;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            transition: color 0.3s ease-in-out, transform 0.3s ease;
+        }
+
+        nav a:hover {
+            color: #4CAF50;
+            transform: scale(1.1); /* Efecto de hover con escala */
+        }
+
+        .game-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .score-timer {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+        }
+
+        .game-area {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .items-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            justify-content: center;
+            min-height: 200px;
+            padding: 1rem;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .bins-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .bin {
+            width: 120px;
+            height: 180px;
+            border: 3px solid #ccc;
+            border-radius: 10px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding: 1rem;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .bin:hover {
+            transform: scale(1.05);
+        }
+
+        .bin.yellow { background-color: rgba(255,215,0,0.2); border-color: #ffd700; }
+        .bin.blue { background-color: rgba(65,105,225,0.2); border-color: #4169e1; }
+        .bin.green { background-color: rgba(60,179,113,0.2); border-color: #3cb371; }
+        .bin.red { background-color: rgba(255,69,0,0.2); border-color: #ff4500; }
+        .bin.gray { background-color: rgba(128,128,128,0.2); border-color: #808080; }
+
+        .bin-label {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+
+        .item {
+            width: 70px;
+            height: 70px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: move;
+            user-select: none;
+            font-size: 2.5rem;
+            background: white;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); /* Sombra negra */
+            transition: transform 0.2s;
+        }
+
+
+        .item:hover {
+            transform: scale(1.1);
+        }
+
+        .message {
+            position: fixed;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 1rem 2rem;
+            border-radius: 5px;
+            color: white;
+            display: none;
+            z-index: 1000;
+        }
+
+        .message.success { background-color: #4CAF50; }
+        .message.error { background-color: #f44336; }
+
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .btn {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #45a049;
+        }
+
+        .difficulty-selector {
+            margin-bottom: 1rem;
+        }
+
+        .level-indicator {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+        }
+
+        footer {
+            background-color: #333;
+            color: white;
+            text-align: center;
+            padding: 1.2rem 0;
+            margin-top: 3rem;
+            box-shadow: 0 -4px 6px rgba(0, 0, 0, 0.2);
+        }
+
+        footer p {
+            margin: 0;
+            font-size: 1rem;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>Juegos Educativos - Sostenibilidad</h1>
+    </header>
+
+    <nav>
+        <a href="Index.html">Inicio</a>
+        <a href="juegos.html">Juegos</a>
+        <a href="valoraciones.html">Valoraciones</a>
+        <a href="contacto.html">Contacto</a>
+    </nav>
+
+    <div class="game-container">
+        <div class="score-timer">
+            <div>Puntuación: <span id="score">0</span></div>
+            <div>Tiempo: <span id="timer">60</span>s</div>
+        </div>
+
+        <div class="difficulty-selector">
+            <label for="difficulty">Dificultad:</label>
+            <select id="difficulty" onchange="changeDifficulty()">
+                <option value="easy">Fácil</option>
+                <option value="medium">Medio</option>
+                <option value="hard">Difícil</option>
+            </select>
+        </div>
+
+        <div class="level-indicator">Nivel: <span id="level">1</span></div>
+
+        <div class="game-area">
+            <div class="items-container" id="items"></div>
+            
+            <div class="bins-container" id="bins"></div>
+        </div>
+
+        <div class="controls">
+            <button class="btn" onclick="restartGame()">Reiniciar</button>
+        </div>
+    </div>
+
+    <footer>
+        <p>&copy; 2025 Juegos Educativos - Sostenibilidad. Todos los derechos reservados.</p>
+    </footer>
+
+    <div id="message" class="message"></div>
+
+    <script>
+        const ITEMS = [
+            // Plástico (Amarillo)
+            {emoji: '🥤', type: 'plastic', points: 5, name: 'Botella'},
+            {emoji: '🥛', type: 'plastic', points: 5, name: 'Envase lácteo'},
+            {emoji: '🧴', type: 'plastic', points: 5, name: 'Envase de champú'},
+            {emoji: '🍶', type: 'plastic', points: 5, name: 'Botella de refresco'},
+            {emoji: '🧂', type: 'plastic', points: 5, name: 'Envase de sal'},
+            {emoji: '🥫', type: 'plastic', points: 5, name: 'Lata de conserva'},
+            
+            // Papel (Azul)
+            {emoji: '📰', type: 'paper', points: 5, name: 'Periódico'},
+            {emoji: '📦', type: 'paper', points: 5, name: 'Caja de cartón'},
+            {emoji: '📓', type: 'paper', points: 5, name: 'Cuaderno'},
+            {emoji: '🧻', type: 'paper', points: 5, name: 'Rollo de papel'},
+            {emoji: '📝', type: 'paper', points: 5, name: 'Folleto'},
+            {emoji: '📨', type: 'paper', points: 5, name: 'Sobre'},
+            
+            // Vidrio (Verde)
+            {emoji: '🍷', type: 'glass', points: 5, name: 'Botella de vino'},
+            {emoji: '🍾', type: 'glass', points: 5, name: 'Botella grande'},
+            {emoji: '🥂', type: 'glass', points: 5, name: 'Copa'},
+            {emoji: '🧴', type: 'glass', points: 5, name: 'Frasco'},
+            {emoji: '🍺', type: 'glass', points: 5, name: 'Botella de cerveza'},
+            {emoji: '🫙', type: 'glass', points: 5, name: 'Tarro de conserva'},
+            
+            // Orgánico (Rojo)
+            {emoji: '🍎', type: 'organic', points: 5, name: 'Manzana'},
+            {emoji: '🥕', type: 'organic', points: 5, name: 'Zanahoria'},
+            {emoji: '🍌', type: 'organic', points: 5, name: 'Plátano'},
+            {emoji: '☕', type: 'organic', points: 5, name: 'Restos de café'},
+            {emoji: '🥗', type: 'organic', points: 5, name: 'Restos de ensalada'},
+            {emoji: '🥔', type: 'organic', points: 5, name: 'Cáscara de papa'},
+            
+            // Otros/No reciclables (Gris)
+            {emoji: '🧤', type: 'other', points: 5, name: 'Guante'},
+            {emoji: '🚬', type: 'other', points: 5, name: 'Colilla'},
+            {emoji: '🧼', type: 'other', points: 5, name: 'Jabón usado'},
+            {emoji: '🩹', type: 'other', points: 5, name: 'Venda'},
+            {emoji: '🧸', type: 'other', points: 5, name: 'Juguete roto'},
+            {emoji: '💿', type: 'other', points: 5, name: 'CD usado'}
+        ];
+
+        const BINS = [
+            {type: 'plastic', color: 'yellow', label: 'Plástico'},
+            {type: 'paper', color: 'blue', label: 'Papel'},
+            {type: 'glass', color: 'green', label: 'Vidrio'},
+            {type: 'organic', color: 'red', label: 'Orgánico'},
+            {type: 'other', color: 'gray', label: 'No Reciclable'}
+        ];
+
+        let score = 0;
+        let timeLeft = 60;
+        let timer;
+        let level = 1;
+        let difficulty = 'easy';
+        let usedItems = new Set();
+
+        const scoreElement = document.getElementById('score');
+        const timerElement = document.getElementById('timer');
+        const itemsContainer = document.getElementById('items');
+        const binsContainer = document.getElementById('bins');
+        const messageElement = document.getElementById('message');
+        const levelElement = document.getElementById('level');
+
+        function getUniqueRandomItems(count) {
+            const availableItems = ITEMS.filter(item => !usedItems.has(item.emoji));
+            const selectedItems = [];
+            
+            while (selectedItems.length < count && availableItems.length > 0) {
+                const randomIndex = Math.floor(Math.random() * availableItems.length);
+                const item = availableItems[randomIndex];
+                selectedItems.push(item);
+                usedItems.add(item.emoji);
+                availableItems.splice(randomIndex, 1);
+            }
+
+            return selectedItems;
+        }
+
+        function createItem(item) {
+            const itemElement = document.createElement('div');
+            itemElement.className = 'item';
+            itemElement.draggable = true;
+            itemElement.innerHTML = item.emoji;
+            itemElement.dataset.type = item.type;
+            itemElement.dataset.points = item.points;
+            
+            itemElement.addEventListener('dragstart', (e) => {
+                e.dataTransfer.setData('text/plain', JSON.stringify(item));
+            });
+            
+            return itemElement;
+        }
+
+        function createBins() {
+            binsContainer.innerHTML = '';
+            BINS.forEach(bin => {
+                const binElement = document.createElement('div');
+                binElement.className = `bin ${bin.color}`;
+                binElement.dataset.type = bin.type;
+                
+                const labelElement = document.createElement('div');
+                labelElement.className = 'bin-label';
+                labelElement.textContent = bin.label;
+                
+                binElement.appendChild(labelElement);
+
+                binElement.addEventListener('dragover', (e) => e.preventDefault());
+                
+                binElement.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    const itemData = JSON.parse(e.dataTransfer.getData('text/plain'));
+                    const binType = e.currentTarget.dataset.type;
+                    
+                    if (itemData.type === binType) {
+                        score += parseInt(itemData.points);
+                        showMessage(`¡Correcto! +${itemData.points} puntos`, true);
+                    } else {
+                        score = Math.max(0, score - Math.floor(itemData.points / 2));
+                        showMessage('¡Incorrecto! Puntos reducidos', false);
+                    }
+                    
+                    scoreElement.textContent = score;
+                    e.target.closest('.item')?.remove();
+
+                    if (itemsContainer.children.length <= 3) {
+                        levelUp();
+                    }
+                });
+
+                binsContainer.appendChild(binElement);
+            });
+        }
+
+        function levelUp() {
+            level++;
+            levelElement.textContent = level;
+            timeLeft = Math.min(60 + (level * 10), 120); // Aumentar tiempo máximo a 120 segundos
+            timerElement.textContent = timeLeft;
+            initializeGame();
+        }
+
+        function initializeGame() {
+            const itemCount = difficulty === 'easy' ? 8 : difficulty === 'medium' ? 10 : 12;
+            itemsContainer.innerHTML = '';
+            
+            const newItems = getUniqueRandomItems(itemCount);
+            newItems.forEach(item => {
+                itemsContainer.appendChild(createItem(item));
+            });
+        }
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 60;
+            timerElement.textContent = timeLeft;
+            
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                
+                if (timeLeft <= 0) {
+                    clearInterval(timer);
+                    showMessage('¡Tiempo agotado! Juego terminado', false);
+                    gameOver();
+                }
+            }, 1000);
+        }
+
+        function gameOver() {
+            const finalScore = score;
+            const finalLevel = level;
+            
+            const gameOverMessage = `Juego terminado. 
+            Puntuación final: ${finalScore} 
+            Nivel alcanzado: ${finalLevel}`;
+            
+            alert(gameOverMessage);
+            restartGame();
+        }
+
+        function restartGame() {
+            score = 0;
+            level = 1;
+            usedItems.clear();
+            scoreElement.textContent = score;
+            levelElement.textContent = level;
+            startTimer();
+            createBins();
+            initializeGame();
+        }
+
+        function showMessage(text, isSuccess) {
+            messageElement.textContent = text;
+            messageElement.className = `message ${isSuccess ? 'success' : 'error'}`;
+            messageElement.style.display = 'block';
+            
+            setTimeout(() => {
+                messageElement.style.display = 'none';
+            }, 2000);
+        }
+
+        function changeDifficulty() {
+            difficulty = document.getElementById('difficulty').value;
+            restartGame();
+        }
+
+        // Iniciar el juego
+        createBins();
+        startTimer();
+        initializeGame();
+    </script>
+</body>
+</html>
